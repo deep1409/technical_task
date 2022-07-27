@@ -1,7 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:immence/resources/string_resources.dart';
 import '../resources/routes.dart';
-
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -15,8 +15,13 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController? emailController;
   TextEditingController? phoneNoController;
   TextEditingController? passwordController;
+  final _nameFoucsnode = FocusNode();
+  final _emailFoucsnode = FocusNode();
+  final _phonenoFoucsnode = FocusNode();
+  final _passFoucsnode = FocusNode();
   bool? passwordVisibility;
   bool value = false;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -38,26 +43,29 @@ class _SignUpPageState extends State<SignUpPage> {
           body: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             children: [
-              SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
               Text(
-                StringResources().companyName,
+                StringResources.companyName,
                 style: TextStyle(
                   color: Colors.blue[900],
                   fontSize: 50,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Text(
-                StringResources().createAccountText,
+                StringResources.createAccountText,
                 style: TextStyle(
                   fontSize: 30,
+                  color: Colors.blue[900],
                   // fontWeight: FontWeight,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Form(
@@ -67,114 +75,26 @@ class _SignUpPageState extends State<SignUpPage> {
                     Padding(
                       padding: const EdgeInsets.only(left: 3.0),
                       child: Text(
-                        StringResources().nameText,
+                        StringResources.nameText,
+                        textScaleFactor: 1.0,
                         style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 20,
+                          color: Colors.blue[900],
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 10,
+                    const SizedBox(
+                      height: 5,
                     ),
-                    TextField(
-                      controller: nameController,
-                      obscureText: false,
-                      keyboardType: TextInputType.name,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your name',
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color(0xFFDBE2E7),
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 15,),
-
-                    Padding(
-                      padding: const EdgeInsets.only(left: 3.0),
-                      child: Text(
-                        StringResources().emailAddressText,
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    TextField(
-                      controller: emailController,
-                      obscureText: false,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        hintText: StringResources().emailHintText,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color(0xFFDBE2E7),
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 15,),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 3.0),
-                      child: Text(
-                        StringResources().phoneNumber,
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    TextField(
-                      controller: phoneNoController,
-                      obscureText: false,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        hintText: StringResources().phoneNumberHintText,
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(
-                            color: Color(0xFFDBE2E7),
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 15,),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 3.0),
-                      child: Text(
-                        StringResources().passwordText,
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    TextField(
-                      controller: passwordController,
-                      obscureText: !passwordVisibility!,
-                      keyboardType: TextInputType.visiblePassword,
-                      decoration: InputDecoration(
-                          hintText: 'Enter your password',
+                    MediaQuery(
+                      data:
+                          MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                      child: TextField(
+                        controller: nameController,
+                        obscureText: false,
+                        keyboardType: TextInputType.name,
+                        decoration: InputDecoration(
+                          hintText: StringResources.nameHintText,
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
                               color: Color(0xFFDBE2E7),
@@ -189,51 +109,199 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          suffixIcon: InkWell(
-                            onTap: () => setState(
-                                  () => passwordVisibility = !passwordVisibility!,
-                            ),
-                            child: Icon(
-                              passwordVisibility!
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: Colors.black,
-                            ),
-                          )),
+                        ),
+                      ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     ),
-                    ListTile(
-                      dense: true,
-                      contentPadding: const EdgeInsets.only(left: 0.0),
-                      onTap: () {
-                        setState(() {
-                          this.value = !value;
-                        });
-                      },
-                      leading: Checkbox(
-                        value: value,
-                        onChanged: (value) {
-                          this.value = value!;
-                        },
+                    Padding(
+                      padding: const EdgeInsets.only(left: 3.0),
+                      child: Text(
+                        StringResources.emailAddressText,
+                        textScaleFactor: 1.0,
+                        style: TextStyle(
+                          color: Colors.blue[900],
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      title: Text(StringResources().rememberMeText),
                     ),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child:  Text(StringResources().signUpText,style: TextStyle(fontSize: 20),),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    MediaQuery(
+                      data:
+                          MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                      child: TextField(
+                        controller: emailController,
+                        obscureText: false,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          hintText: StringResources.emailHintText,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Color(0xFFDBE2E7),
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Color(0xFFDBE2E7),
+                              width: 2,
+                            ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                       ),
                     ),
-
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 3.0),
+                      child: Text(
+                        StringResources.phoneNumber,
+                        textScaleFactor: 1.0,
+                        style: TextStyle(
+                          color: Colors.blue[900],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    MediaQuery(
+                      data:
+                          MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                      child: TextField(
+                        controller: phoneNoController,
+                        obscureText: false,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          hintText: StringResources.phoneNumberHintText,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Color(0xFFDBE2E7),
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Color(0xFFDBE2E7),
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 3.0),
+                      child: Text(
+                        StringResources.passwordText,
+                        textScaleFactor: 1.0,
+                        style: TextStyle(
+                          color: Colors.blue[900],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    MediaQuery(
+                      data:
+                          MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                      child: TextField(
+                        controller: passwordController,
+                        obscureText: !passwordVisibility!,
+                        keyboardType: TextInputType.visiblePassword,
+                        decoration: InputDecoration(
+                            hintText: StringResources.passwordHintText,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color(0xFFDBE2E7),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Color(0xFFDBE2E7),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            suffixIcon: InkWell(
+                              onTap: () => setState(
+                                () => passwordVisibility = !passwordVisibility!,
+                              ),
+                              child: Icon(
+                                passwordVisibility!
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.black,
+                              ),
+                            )),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: value,
+                          onChanged: (value) {
+                            setState(() {
+                              this.value = value!;
+                            });
+                          },
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              value = !value;
+                            });
+                          },
+                          child: const Text(
+                            StringResources.rememberMeText,
+                            textScaleFactor: 1.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: signUp,
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.blue[900],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: isLoading == false
+                            ? const Text(
+                                StringResources.signUpText,
+                                textScaleFactor: 1.0,
+                                style: TextStyle(color: Colors.white),
+                              )
+                            : const SizedBox(
+                                height: 15,
+                                width: 15,
+                                child: CircularProgressIndicator(
+                                    color: Colors.white, strokeWidth: 2),
+                              ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -244,7 +312,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    StringResources().alreadyhaveaccText,
+                    StringResources.alreadyhaveaccText,
+                    textScaleFactor: 1.0,
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.grey.withOpacity(0.8),
@@ -252,12 +321,17 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).pushNamedAndRemoveUntil(loginRoute, (route) => false);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          loginRoute, (route) => false);
                     },
                     child: Text(
-                      StringResources().loginText,
-                      style:
-                      TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      StringResources.loginText,
+                      textScaleFactor: 1.0,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue[900],
+                      ),
                     ),
                   ),
                 ],
@@ -268,4 +342,105 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
+
+  Future<void> signUp() async {
+    if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+            .hasMatch(emailController!.text) ||
+        passwordController!.text.isEmpty ||
+        passwordController!.text.length < 6 || !RegExp(r'^(?:[+0][1-9])?[0-9]{10,12}$').hasMatch(phoneNoController!.text) || nameController!.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            StringResources.snackbarLoginText,
+          ),
+        ),
+      );
+    } else {
+      startLoading();
+      final email = emailController!.text;
+      final name = nameController!.text;
+      final phoneNo = phoneNoController!.text;
+      final password = passwordController!.text;
+      try {
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          // name: name,
+          email: email,
+          password: password,
+        );
+        final user = FirebaseAuth.instance.currentUser;
+        await user?.updateDisplayName(name);
+        await user.updatePhoneNumber(phoneCredential);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(profileRoute, (route) => false);
+        stopLoading();
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'weak-password') {
+          stopLoading();
+          showErrorDialog(
+            context,
+            'Weak Password',
+          );
+        } else if (e.code == 'email-already-in-use') {
+          stopLoading();
+          showErrorDialog(
+            context,
+            'Email is already in use',
+          );
+        } else if (e.code == 'invalid-email') {
+          stopLoading();
+          showErrorDialog(
+            context,
+            'This is an invalid email address',
+          );
+        } else {
+          stopLoading();
+          showErrorDialog(
+            context,
+            '${e.code}',
+          );
+          // devtools.log('Something wrong happen!!');
+        }
+      } catch (e) {
+        stopLoading();
+        showErrorDialog(
+          context,
+          '$e',
+        );
+      }
+    }
+  }
+
+  void startLoading() {
+    setState(() {
+      isLoading = true;
+    });
+  }
+
+  void stopLoading() {
+    setState(() {
+      isLoading = false;
+    });
+  }
+}
+
+Future<void> showErrorDialog(
+  BuildContext context,
+  String text,
+) {
+  return showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('An error occurred'),
+          content: Text(text),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      });
 }
