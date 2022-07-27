@@ -369,7 +369,7 @@ class _SignUpPageState extends State<SignUpPage> {
         );
         final user = FirebaseAuth.instance.currentUser;
         await user?.updateDisplayName(name);
-        await user.updatePhoneNumber(phoneCredential);
+        // await user.updatePhoneNumber(phoneCredential);
         Navigator.of(context)
             .pushNamedAndRemoveUntil(profileRoute, (route) => false);
         stopLoading();
