@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:immence/resources/string_resources.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../resources/routes.dart';
 
@@ -269,6 +272,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> login() async {
+    final docUser = FirebaseFirestore.instance
+        .collection('users')
+        .doc(emailController!.text);
     if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
             .hasMatch(emailController!.text) ||
         passwordController!.text.isEmpty ||
@@ -289,9 +295,21 @@ class _LoginPageState extends State<LoginPage> {
           email: email,
           password: password,
         );
+        docUser.update({
+          'login': true,
+        });
+        if(value){
+          final sp = await SharedPreferences.getInstance();
+          Map<String, dynamic> data = {
+            'email': email,
+            'password': password
+          };
+          sp.setString('email', json.encode(data));
+          print('${sp.getString('email')}');
+        }
         final user = FirebaseAuth.instance.currentUser;
         Navigator.of(context)
-            .pushNamed(profileRoute);
+            .pushNamedAndRemoveUntil(profileRoute,(route) => false);
         stopLoading();
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {

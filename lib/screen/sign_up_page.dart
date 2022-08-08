@@ -1,7 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:immence/resources/string_resources.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../resources/routes.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+import 'dart:developer' as dev;
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -344,10 +348,15 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Future<void> signUp() async {
+    dev.log('name: ${nameController!.text}\n'
+        'email: ${emailController!.text}\n'
+        'phone no.: ${phoneNoController!.text}\n'
+        'password: ${passwordController!.text}');
+
     if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
             .hasMatch(emailController!.text) ||
         passwordController!.text.isEmpty ||
-        passwordController!.text.length < 6 || !RegExp(r'^(?:[+0][1-9])?[0-9]{10,12}$').hasMatch(phoneNoController!.text) || nameController!.text.isEmpty) {
+        passwordController!.text.length < 6 || !RegExp(r'^(?:[+0][1-9])?[0-9]{10,12}$').hasMatch(phoneNoController!.text) ||  nameController!.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -367,8 +376,27 @@ class _SignUpPageState extends State<SignUpPage> {
           email: email,
           password: password,
         );
+        if(value){
+          final sp = await SharedPreferences.getInstance();
+          Map<String, dynamic> data = {
+            'email': email,
+            'password': password
+          };
+          sp.setString('email', jsonEncode(data));
+          print('${sp.getString('email')}');
+        }
+
         final user = FirebaseAuth.instance.currentUser;
         await user?.updateDisplayName(name);
+        final docUser = FirebaseFirestore.instance.collection('users').doc(email);
+        final json = {
+          'email': email,
+          'name': name,
+          'login': true,
+          'phonenumber': int.parse(phoneNo),
+        };
+        await docUser.set(json);
+
         // await user.updatePhoneNumber(phoneCredential);
         Navigator.of(context)
             .pushNamedAndRemoveUntil(profileRoute, (route) => false);

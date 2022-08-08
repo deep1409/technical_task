@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:immence/screen/home_page.dart';
 import 'package:immence/screen/login_page.dart';
@@ -5,7 +6,11 @@ import 'package:immence/screen/profile_page.dart';
 import 'package:immence/screen/sign_up_page.dart';
 import './resources/routes.dart';
 
-void main() {
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
